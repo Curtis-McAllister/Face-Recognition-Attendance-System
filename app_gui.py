@@ -106,10 +106,10 @@ class ApplicationGUI(QWidget):
     def navigate_to_start_page(self):
         """ Navigates to the Start page. """
         self.app_pages.setCurrentIndex(0)
-        self.camera_feed_widget.hide_camera_feed()
+        self.camera_feed_widget.stop_camera_feed()
 
     def navigate_to_camera_feed_page(self):
         """ Navigates to the Camera feed page. """
         self.app_pages.setCurrentIndex(1)
         self.label_module_title.setText(self.entry_module.text())
-        self.camera_feed_widget.display_camera_feed()
+        self.camera_feed_widget.start_camera_feed()
