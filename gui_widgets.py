@@ -91,9 +91,9 @@ class CameraFeedWidget(QWidget):
         self.camera_feed_widget_layout.addWidget(self.video_frame_widget)
         self.setLayout(self.camera_feed_widget_layout)
 
-    def start_camera_feed(self):
+    def start_camera_feed(self, time):
         """ Starts the camera feed. """
-        self.camera_feed.start_recording()
+        self.camera_feed.start_recording(time)
 
     def stop_camera_feed(self):
         """ Stops the camera feed. """

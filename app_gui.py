@@ -112,4 +112,8 @@ class ApplicationGUI(QWidget):
         """ Navigates to the Camera feed page. """
         self.app_pages.setCurrentIndex(1)
         self.label_module_title.setText(self.entry_module.text())
-        self.camera_feed_widget.start_camera_feed()
+        self.camera_feed_widget.start_camera_feed(self.convert_to_minutes(int(self.entry_timer.text())))
+
+    def convert_to_minutes(self, time):
+        converted_time = time * 60
+        return converted_time
