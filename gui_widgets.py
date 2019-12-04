@@ -1,14 +1,16 @@
 """ Module which creates widgets for use within the applications GUI.
 
  CameraFrameWidget is reponsible for showing frames from a video. CameraFeedWidget displays results
-  from CameraFrameWidget and passes data from the camera to CameraFrameWidget.
+ from CameraFrameWidget and passes data from the camera to CameraFrameWidget.
  """
 
 import numpy as np
+import cv2
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 from PyQt5.QtGui import QImage, QPainter
 
+from face_detection import detect_faces
 from camera import Camera
 
 __author__ = "Curtis McAllister"
@@ -23,17 +25,26 @@ class CameraFrameWidget(QWidget):
         """ Initialises the CameraFrameWidget. """
         super().__init__(parent)
         self.image = QImage()
-
-    # TODO: add face detection method to draw bounding box around detected faces.
+        self.__bounding_box_colour = (0, 255, 0)
+        self.__bounding_box_thickness = 3
 
     def display_frame(self, image_data):
-        """ Displays a frame from the camera.
+        """ Paints a bounding box around detected faces in the camera feed and displays this frame.
 
-        Receives image data and adjusts widget size to match it.
+        Receives image data, passes it to face_detection model then uses the returned results to paint a bounding box
+        around detected faces. Then adjusts the widget size to match the size of the image.
 
         Args:
             image_data: Image data from the camera.
         """
+        detected_faces = detect_faces(image_data)
+
+        for (bounding_box_start, bounding_box_end) in detected_faces:
+            cv2.rectangle(image_data,
+                          bounding_box_start,
+                          bounding_box_end,
+                          self.__bounding_box_colour,
+                          self.__bounding_box_thickness)
 
         self.image = self.get_frame(image_data)
         if self.image.size() != self.size():
@@ -54,7 +65,7 @@ class CameraFrameWidget(QWidget):
             feed_image: processed image data.
 
          """
-        height, width, colour = image.shape
+        height, width = image.shape[:2]
         bytes_per_line = 3 * width
         feed_image = QImage
 
