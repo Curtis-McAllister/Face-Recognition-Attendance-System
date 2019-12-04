@@ -5,10 +5,10 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from app_gui import ApplicationGUI
 
-__author__ = "Curtis McAllister"
-__maintainer__ = "Curtis McAllister"
-__email__ = "mcallister_c20@ulster.ac.uk"
-__status__ = "Development"
+__author__ = 'Curtis McAllister'
+__maintainer__ = 'Curtis McAllister'
+__email__ = 'mcallister_c20@ulster.ac.uk'
+__status__ = 'Development'
 
 
 class Application(QMainWindow, ApplicationGUI):

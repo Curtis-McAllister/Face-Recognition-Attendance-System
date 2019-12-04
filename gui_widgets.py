@@ -13,10 +13,10 @@ from PyQt5.QtGui import QImage, QPainter
 from face_detection import detect_faces
 from camera import Camera
 
-__author__ = "Curtis McAllister"
-__maintainer__ = "Curtis McAllister"
-__email__ = "mcallister_c20@ulster.ac.uk"
-__status__ = "Development"
+__author__ = 'Curtis McAllister'
+__maintainer__ = 'Curtis McAllister'
+__email__ = 'mcallister_c20@ulster.ac.uk'
+__status__ = 'Development'
 
 
 class CameraFrameWidget(QWidget):

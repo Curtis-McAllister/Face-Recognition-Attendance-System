@@ -9,10 +9,10 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QStackedLayout, QGridLayout, Q
 
 from gui_widgets import CameraFeedWidget
 
-__author__ = "Curtis McAllister"
-__maintainer__ = "Curtis McAllister"
-__email__ = "mcallister_c20@ulster.ac.uk"
-__status__ = "Development"
+__author__ = 'Curtis McAllister'
+__maintainer__ = 'Curtis McAllister'
+__email__ = 'mcallister_c20@ulster.ac.uk'
+__status__ = 'Development'
 
 class ApplicationGUI(QWidget):
     """Class used to define GUI components of the application, and enable navigation between pages of the GUI."""
@@ -36,29 +36,29 @@ class ApplicationGUI(QWidget):
         # Page Properties
         self.stack_start_page.setWindowTitle('Start Page')
         self.stack_start_page.setFixedSize(600, 400)
-        self.stack_start_page.setStyleSheet("background: #424242")
+        self.stack_start_page.setStyleSheet('background: #424242')
 
         # Label Widgets
         self.label_title = QLabel(self.stack_start_page, text='Face Recognition Attendance System')
-        self.label_title.setStyleSheet("font-size: 24px; color: white;")
+        self.label_title.setStyleSheet('font-size: 24px; color: white;')
         self.label_title.setGeometry(60, 20, 600, 30)
         self.label_module = QLabel(text='Module:')
-        self.label_module.setStyleSheet("font-size: 16px; color: white")
+        self.label_module.setStyleSheet('font-size: 16px; color: white')
         self.label_timer = QLabel(text='Length of Class (Hours):')
-        self.label_timer.setStyleSheet("font-size: 16px; color: white")
+        self.label_timer.setStyleSheet('font-size: 16px; color: white')
 
         # Text Entry Widgets
         # TODO: Replace module QLineEdit with dropdown menu of modules connected to database
         self.entry_module = QLineEdit()
-        self.entry_module.setStyleSheet("color: white; background-color: grey;")
+        self.entry_module.setStyleSheet('color: white; background-color: grey;')
         self.spin_box_time = QSpinBox()
         self.spin_box_time.setMinimum(1)
         self.spin_box_time.setMaximum(24)
-        self.spin_box_time.setStyleSheet("color: white; background-color: grey")
+        self.spin_box_time.setStyleSheet('color: white; background-color: grey')
 
         # Button Widgets
         self.button_navigate_start = QPushButton(text='Start Recording')
-        self.button_navigate_start.setStyleSheet("color: white; background-color: #003366")
+        self.button_navigate_start.setStyleSheet('color: white; background-color: #003366')
 
         # Button Widget Signal
         self.button_navigate_start.clicked.connect(self.navigate_to_camera_feed_page)
@@ -78,11 +78,11 @@ class ApplicationGUI(QWidget):
         # Page Properties
         self.stack_camera_feed_page.setWindowTitle('Face Detection Page')
         self.stack_camera_feed_page.setFixedSize(1000, 600)
-        self.stack_camera_feed_page.setStyleSheet("background: #424242")
+        self.stack_camera_feed_page.setStyleSheet('background: #424242')
 
         # Button Widgets
         self.button_navigate_main_menu = QPushButton(text='Cancel and return to Start Page')
-        self.button_navigate_main_menu.setStyleSheet("color: white; background-color: #003366")
+        self.button_navigate_main_menu.setStyleSheet('color: white; background-color: #003366')
         self.button_navigate_main_menu.setGeometry(0, 50, 120, 60)
 
         # Button Widget Signal
@@ -90,7 +90,7 @@ class ApplicationGUI(QWidget):
 
         # Label Widget
         self.label_module_title = QLabel()
-        self.label_module_title.setStyleSheet("font-size: 20px; color: white")
+        self.label_module_title.setStyleSheet('font-size: 20px; color: white')
 
         # Camera Feed Widget
         self.camera_feed_widget = CameraFeedWidget()

@@ -5,10 +5,10 @@ import numpy as np
 import cv2
 from PyQt5 import QtCore
 
-__author__ = "Curtis McAllister"
-__maintainer__ = "Curtis McAllister"
-__email__ = "mcallister_c20@ulster.ac.uk"
-__status__ = "Development"
+__author__ = 'Curtis McAllister'
+__maintainer__ = 'Curtis McAllister'
+__email__ = 'mcallister_c20@ulster.ac.uk'
+__status__ = 'Development'
 
 class Camera(QtCore.QObject):
     """ Creates a Camera object able to be accessed by other objects, and provides controls for the camera. """
