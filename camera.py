@@ -25,8 +25,10 @@ class Camera(QtCore.QObject):
         """ Starts the camera feed, and sets timer which the camera will run for. """
         self.camera = cv2.VideoCapture(0)
 
+        # Create timer to enforce how long the camera records for
         self.start_time = time.time()
         self.capture_duration = capture_duration
+
         self.timer.start(0, self)
 
     def stop_recording(self):
@@ -37,10 +39,10 @@ class Camera(QtCore.QObject):
     def timerEvent(self, event):
         """ Event run after every increment of the timer, which outputs image data
          and stops the camera feed when time limit is exceeded. """
+
         if int(time.time()) - self.start_time > self.capture_duration:
             self.stop_recording()
 
-        read, data = self.camera.read()
-        if read:
+        recording, data = self.camera.read()
+        if recording:
             self.image_data.emit(data)
-

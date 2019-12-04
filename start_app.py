@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """ Starts application, displays GUI Page components on window"""
 
 import sys
