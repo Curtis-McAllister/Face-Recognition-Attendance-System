@@ -5,7 +5,7 @@ ApplicationGUI is responsible for creation of the GUI for this application, and 
  """
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QPushButton, QStackedLayout, QGridLayout, QLabel, QLineEdit
+from PyQt5.QtWidgets import QWidget, QPushButton, QStackedLayout, QGridLayout, QLabel, QLineEdit, QSpinBox
 
 from gui_widgets import CameraFeedWidget
 
@@ -44,19 +44,21 @@ class ApplicationGUI(QWidget):
         self.label_title.setGeometry(60, 20, 600, 30)
         self.label_module = QLabel(text='Module:')
         self.label_module.setStyleSheet("font-size: 16px; color: white")
-        self.label_timer = QLabel(text='Length of Class (Minutes):')
+        self.label_timer = QLabel(text='Length of Class (Hours):')
         self.label_timer.setStyleSheet("font-size: 16px; color: white")
 
         # Text Entry Widgets
         # TODO: Replace module QLineEdit with dropdown menu of modules connected to database
         self.entry_module = QLineEdit()
         self.entry_module.setStyleSheet("color: white; background-color: grey;")
-        self.entry_timer = QLineEdit()
-        self.entry_timer.setStyleSheet("color: white; background-color: grey;")
+        self.spin_box_time = QSpinBox()
+        self.spin_box_time.setMinimum(1)
+        self.spin_box_time.setMaximum(24)
+        self.spin_box_time.setStyleSheet("color: white; background-color: grey")
 
         # Button Widgets
         self.button_navigate_start = QPushButton(text='Start Recording')
-        self.button_navigate_start.setStyleSheet("background-color: #003366")
+        self.button_navigate_start.setStyleSheet("color: white; background-color: #003366")
 
         # Button Widget Signal
         self.button_navigate_start.clicked.connect(self.navigate_to_camera_feed_page)
@@ -67,7 +69,7 @@ class ApplicationGUI(QWidget):
         self.grid_layout_start_page.addWidget(self.label_module, 1, 1, alignment=QtCore.Qt.AlignRight)
         self.grid_layout_start_page.addWidget(self.entry_module, 1, 2, alignment=QtCore.Qt.AlignLeft)
         self.grid_layout_start_page.addWidget(self.label_timer, 2, 1, alignment=QtCore.Qt.AlignRight)
-        self.grid_layout_start_page.addWidget(self.entry_timer, 2, 2, alignment=QtCore.Qt.AlignLeft)
+        self.grid_layout_start_page.addWidget(self.spin_box_time, 2, 2, alignment=QtCore.Qt.AlignLeft)
         self.grid_layout_start_page.addWidget(self.button_navigate_start, 3, 2, alignment=QtCore.Qt.AlignLeft)
 
     def camera_feed_page_ui(self):
@@ -75,12 +77,12 @@ class ApplicationGUI(QWidget):
          and list of students marked as present. Also contains a button to navigate back to the start page. """
         # Page Properties
         self.stack_camera_feed_page.setWindowTitle('Face Detection Page')
-        self.stack_camera_feed_page.setFixedSize(900, 600)
+        self.stack_camera_feed_page.setFixedSize(1000, 600)
         self.stack_camera_feed_page.setStyleSheet("background: #424242")
 
         # Button Widgets
-        self.button_navigate_main_menu = QPushButton(text='Main Menu')
-        self.button_navigate_main_menu.setStyleSheet("background-color: #003366")
+        self.button_navigate_main_menu = QPushButton(text='Cancel and return to Start Page')
+        self.button_navigate_main_menu.setStyleSheet("color: white; background-color: #003366")
         self.button_navigate_main_menu.setGeometry(0, 50, 120, 60)
 
         # Button Widget Signal
@@ -112,8 +114,8 @@ class ApplicationGUI(QWidget):
         """ Navigates to the Camera feed page. """
         self.app_pages.setCurrentIndex(1)
         self.label_module_title.setText(self.entry_module.text())
-        self.camera_feed_widget.start_camera_feed(self.convert_to_minutes(int(self.entry_timer.text())))
+        self.camera_feed_widget.start_camera_feed(self.convert_to_hours(int(self.spin_box_time.value())))
 
-    def convert_to_minutes(self, time):
-        converted_time = time * 60
+    def convert_to_hours(self, time):
+        converted_time = time * 3600
         return converted_time
