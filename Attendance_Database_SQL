@@ -1,0 +1,487 @@
+-- DROP ALL TABLES
+DROP TABLE attendance;
+DROP TABLE lecture;
+DROP TABLE student_face_image;
+DROP TABLE student_module;
+DROP TABLE lecturer_module;
+DROP TABLE course_module;
+DROP TABLE lecturer;
+DROP TABLE student;
+DROP TABLE face_image;
+
+-- TABLE CREATION
+CREATE TABLE course_module (
+	module_id INT GENERATED ALWAYS AS IDENTITY NOT NULL,
+	module_name VARCHAR(50) NOT NULL,
+	year_started INT NOT NULL,
+	module_level INT NOT NULL,
+	credits INT NOT NULL,
+
+	--CONSTRAINTS
+	PRIMARY KEY (module_id)
+);
+
+CREATE TABLE lecturer (
+	lecturer_id INT GENERATED ALWAYS AS IDENTITY NOT NULL,
+	forename VARCHAR(20) NOT NULL,
+	surname VARCHAR(20) NOT NULL,
+	gender CHAR(1) NOT NULL,
+	birth_date DATE NOT NULL,
+	email VARCHAR(50) NOT NULL UNIQUE,
+	lecturer_password VARCHAR(60) NOT NULL,
+
+	--CONSTRAINTS
+	PRIMARY KEY (lecturer_id)
+);
+
+CREATE TABLE student (
+	student_id INT GENERATED ALWAYS AS IDENTITY NOT NULL,
+	forename VARCHAR(20) NOT NULL,
+	surname VARCHAR(20) NOT NULL,
+	gender CHAR(1) NOT NULL,
+	birth_date DATE NOT NULL,
+	email VARCHAR(50) NOT NULL UNIQUE,
+	student_password VARCHAR(60) NOT NULL,
+
+	--CONSTRAINTS
+	PRIMARY KEY (student_id)
+);
+
+CREATE TABLE student_image(
+	student_id INT GENERATED ALWAYS AS IDENTITY NOT NULL,
+	image BYTEA NOT NULL,
+	
+	--CONSTRAINTS
+	PRIMARY KEY (student_id),
+	FOREIGN KEY (student_id) REFERENCES student(student_id)
+)
+
+CREATE TABLE lecture (
+	lecture_id INT GENERATED ALWAYS AS IDENTITY NOT NULL,
+	module_id INT NOT NULL,
+	lecturer_id INT NOT NULL,
+	date_taught DATE NOT NULL,
+
+	--CONSTRAINTS
+	PRIMARY KEY (lecture_id),
+	FOREIGN KEY (module_id) REFERENCES course_module (module_id),
+	FOREIGN KEY (lecturer_id) REFERENCES lecturer (lecturer_id)
+);
+
+CREATE TABLE lecturer_module (
+	lecturer_id INT NOT NULL,
+	module_id INT NOT NULL,
+
+	--CONSTRAINTS
+	PRIMARY KEY (lecturer_id, module_id),
+	FOREIGN KEY (lecturer_id) REFERENCES lecturer (lecturer_id),
+	FOREIGN KEY (module_id) REFERENCES course_module (module_id)
+);
+
+CREATE TABLE student_module (
+	student_id INT NOT NULL,
+	module_id INT NOT NULL,
+
+	--CONSTRAINTS
+	PRIMARY KEY (student_id, module_id),
+	FOREIGN KEY (student_id) REFERENCES student (student_id),
+	FOREIGN KEY (module_id) REFERENCES course_module (module_id)
+);
+
+CREATE TABLE attendance (
+	lecture_id INT NOT NULL,
+	student_id INT NOT NULL,
+	present BOOL NOT NULL,
+	excused BOOL NOT NULL,
+
+	--CONSTRAINTS
+	PRIMARY KEY (lecture_id, student_id),
+	FOREIGN KEY (lecture_id) REFERENCES lecture (lecture_id),
+	FOREIGN KEY (student_id) REFERENCES student (student_id)
+);
+
+--DATA INSERTION
+INSERT INTO course_module (module_name, year_started, module_level, credits)
+VALUES ('Programming 1', 2019, 4, 40),
+('Programming 2', 2019, 4, 40),
+('Programming 3', 2019, 5, 50),
+('Database Engineering', 2019, 4, 40),
+('Process Management', 2019, 5, 50),
+('Professional Development', 2019, 3, 35),
+('Artificial Development', 2019, 5, 50),
+('Computer Vision', 2019, 5, 50),
+('Project', 2019, 6, 75),
+('Programming 1', 2020, 4, 40),
+('Programming 2', 2020, 4, 40),
+('Programming 3', 2020, 4, 40);
+
+INSERT INTO lecturer (forename, surname, gender, birth_date, email, lecturer_password)
+VALUES ('Ronald', 'Hoffstader', 'm', '1986-05-06', 'ronald@university.ac.uk', ''),
+('Roberta', 'Reynolds', 'f', '1975-06-13', 'roberta@university.ac.uk', '$2b$12$oejW/eK..BEVb0jORuzBx.3LlX9JMxIhp1MoMFmqjwv3mjmULzDTO'),
+('Simon', 'Pinkman', 'm', '1991-11-02', 'simon@university.ac.uk', '$2b$12$uY38R5vcZakNl/hLEKZAlueUgSQvcyZHZNHmQZTcYvXbF84VHrcVC'),
+('Mark', 'Merchant', 'm', '1981-08-24', 'mark@university.ac.uk', '$2b$12$9oIpRws.SvlA6wuKROuR9.5AT0/t9.FvzGwUim3H1fdieDBOx1jMm'),
+('Patricia', 'Tucker', 'f', '1979-07-12', 'patricia@university.ac.uk', '$2b$12$AwkB9VH1fawJC3iVCpRYXOj9LH5FCW0hBpc6WW0eBOeu6I.Q9dh4u'),
+('Nicole', 'Allen', 'f', '1964-12-01', 'nicole@university.ac.uk', '$2b$12$STjAfZJ8VjpG8jA.e7HqTuW0ZTJpclMGqCHr02jBwbHV6BcAr0eTK'),
+('Frank', 'Scott', 'm', '1974-04-24', 'frank@university.ac.uk', '$2b$12$9V6M2K9xlW3a8pl.0ZeSC.qROOlcKUwwCD/Sakm.x0vYTsjUiXSym');
+
+INSERT INTO student (forename, surname, gender, birth_date, email, student_password)
+VALUES ('Curtis', 'MacAlister', 'm', '1993-05-06', 'c-macallister@university.ac.uk', '$2y$12$m7Ex63Nlao5ybk6nts9Nae3DHkJ35wGxtkLM7ZJCthWrzukBXr...'),
+('Harry', 'Ford', 'm', '1989-01-13', 'h-ford@university.ac.uk', '$2y$12$OKOb2PpNRiTq3rj4Dqv7iuuqQeGdADkdPgH9trKumwKcr0oziBHKW'),
+('Teresa', 'Hammond', 'f', '1999-07-09', 't-hammond@university.ac.uk', '$2y$12$My0OeiI8D.Uq2HpytZ/HPu6ZmnkuLqbuj2jfJueuPa1oh34Knv4FG'),
+('Francine', 'McAdams', 'f', '1997-08-04', 'f-mcadams@university.ac.uk', '$2y$12$jGB/PsZtaFi0TTdwtM1njOCUqiOMeDsOc244XxHo6/FVX.M4UkaG2'),
+('Patricia', 'Tucker', 'f', '1979-07-12', 'p-tucker@university.ac.uk', '$2y$12$feTN/88IkLLATeUqCz7.2Olx8KB4lB422um.hoD.QDK/7V6sfrRJO'),
+('Alberta', 'Douglas', 'f', '1987-11-21', 'a-douglas@university.ac.uk', '$2y$12$JHdO76PAMA0/kjdARruFOeZe8dYQe1VzQEMtavEN2YXUx9ptnhlHy'),
+('Eugene', 'McGuckan', 'm', '1995-03-14', 'e-mcguckan@university.ac.uk', '$2y$12$ahxIQ/emTzR5GQ7N/qasEune5pW5yjFDhVTDl8SjqMAVa9mNbg1DS');
+
+INSERT INTO lecture (module_id, lecturer_id, date_taught)
+VALUES (1, 1, '2020-01-12'),
+(2, 2, '2020-01-12'),
+(5, 3, '2020-01-12'),
+(4, 4, '2020-01-13'),
+(7, 5, '2020-01-13'),
+(9, 6, '2020-01-13'),
+(9, 7, '2020-01-13'),
+(6, 1, '2020-01-13'),
+(3, 2, '2020-01-13'),
+(2, 3, '2020-01-13'),
+(2, 4, '2020-01-13'),
+(2, 5, '2020-01-13'),
+(7, 6, '2020-01-14');
+
+INSERT INTO attendance
+VALUES (1, 1, True, False),
+(1, 2, True, False),
+(1, 3, False, False),
+(1, 4, True, False),
+(1, 5, False, True),
+(1, 6, True, False),
+(1, 7, True, False),
+(2, 1, True, False),
+(2, 2, False, False),
+(2, 3, True, False),
+(2, 4, True, False),
+(2, 5, True, False),
+(2, 6, True, False),
+(2, 7, True, False),
+(10, 1, False, False),
+(10, 2, True, False),
+(10, 3, False, True),
+(10, 4, True, False),
+(10, 5, True, False),
+(10, 6, True, False),
+(10, 7, True, False);
+
+INSERT INTO student_module
+VALUES (1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(2, 5),
+(2, 6),
+(2, 7),
+(2, 8),
+(2, 9),
+(3, 5),
+(3, 6),
+(3, 7),
+(3, 8),
+(3, 9),
+(3, 10),
+(4, 6),
+(4, 7),
+(4, 10),
+(4, 11),
+(5, 8),
+(5, 9),
+(5, 11),
+(5, 12),
+(6, 1),
+(6, 2),
+(6, 3),
+(6, 4),
+(7, 5),
+(7, 6),
+(7, 7),
+(7, 8),
+(7, 9);
+
+INSERT INTO lecturer_module
+VALUES (1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(2, 5),
+(2, 6),
+(2, 7),
+(2, 8),
+(2, 9),
+(3, 5),
+(3, 6),
+(3, 7),
+(3, 8),
+(3, 9),
+(3, 10),
+(4, 6),
+(4, 7),
+(4, 10),
+(4, 11),
+(5, 8),
+(5, 9),
+(5, 11),
+(5, 12),
+(6, 1),
+(6, 2),
+(6, 3),
+(6, 4),
+(7, 5),
+(7, 6),
+(7, 7),
+(7, 8),
+(7, 9);
+
+
+-- SELECT EVERY MODULE A LECTURER TEACHES
+select lec.lecturer_id, lec_mdl.module_id
+from lecturer lec inner join lecturer_module lec_mdl on lec.lecturer_id = lec_mdl.lecturer_id
+WHERE lec.lecturer_id = 7;
+
+
+--FUNCTIONS
+
+-- FUNCTION TO CREATE AN ATTENDANCE RECORD
+CREATE OR REPLACE FUNCTION create_attendance_record(lecture_id integer, student_id integer)
+RETURNS VOID
+LANGUAGE 'sql'
+AS $BODY$
+INSERT INTO attendance VALUES ($1, $2);
+$BODY$
+
+-- FUNCTION TO DISPLAY THE MODULES A LECTURER IS ASSIGNED TO
+CREATE OR REPLACE FUNCTION lecturer_assignments(integer)
+    RETURNS TABLE(
+	"Module ID" integer,
+	"Module Name" text
+    )
+    LANGUAGE 'sql'
+AS $BODY$
+SELECT 
+	lec_mdl.module_id, 
+	mdl.module_name || '(' || mdl.year_started || ' - ' || mdl.year_started + 1 || ')' AS "Module Title"
+FROM lecturer lec 
+	INNER JOIN lecturer_module lec_mdl 
+		on lec.lecturer_id = lec_mdl.lecturer_id
+	INNER JOIN course_module mdl 
+		ON lec_mdl.module_id = mdl.module_id
+WHERE lec.lecturer_id = $1;
+$BODY$
+
+-- FUNCTION TO DISPLAY THE DETAILS OF A MODULE
+CREATE OR REPLACE FUNCTION module_information(integer)
+    RETURNS TABLE(
+	"Module ID" integer,
+	"Module Name" text,
+	"Year" integer,
+	"Level" integer,
+	"Credits" integer,
+	"Students Enroled" bigint
+    )
+    LANGUAGE 'sql'
+AS $BODY$
+SELECT 
+	mdl.module_id,
+	mdl.module_name,
+	mdl.year_started,
+	mdl.module_level,
+	mdl.credits,
+	count(std_mdl.module_id)
+FROM course_module mdl 
+	INNER JOIN student_module std_mdl 
+		on mdl.module_id = std_mdl.module_id
+WHERE mdl.module_id = $1
+GROUP BY 
+	mdl.module_id,
+	mdl.module_name,
+	mdl.year_started,
+	mdl.module_level,
+	mdl.credits;
+$BODY$
+
+-- FUNCTION TO DISPLAY THE STUDENTS ENROLLED ON A MODULE
+CREATE OR REPLACE FUNCTION module_enrolement_information(integer)
+    RETURNS TABLE(
+	"Module ID" integer, 
+	"Student ID" integer, 
+	"Forename" text, 
+	"Surname" text, 
+	"Email" text
+    )
+    LANGUAGE 'sql'
+AS $BODY$
+SELECT 
+	std_mdl.module_id,
+	std.student_id,
+	std.forename,
+	std.surname,
+	std.email
+FROM student_module std_mdl 
+	INNER JOIN student std 
+		on std_mdl.student_id = std.student_id
+WHERE std_mdl.module_id = $1;
+$BODY$
+
+-- FUNCTION TO GET ALL THE IMAGES OF STUDENTS ENROLLED IN A MODULE
+-- FUNCTION TO DISPLAY THE STUDENTS ENROLLED ON A MODULE
+CREATE OR REPLACE FUNCTION module_student_images(integer)
+    RETURNS TABLE( 
+	"Student ID" integer,
+	"Image" bytea
+    )
+    LANGUAGE 'sql'
+AS $BODY$
+SELECT 
+	std.student_id,
+	img.image
+FROM student_module std_mdl 
+	INNER JOIN student std 
+		ON std_mdl.student_id = std.student_id
+	INNER JOIN student_image AS img
+		ON std.student_id = img.student_id
+WHERE std_mdl.module_id = $1;
+$BODY$
+
+-- FUNCTION TO DISPLAY STUDENT INFORMATION
+CREATE OR REPLACE FUNCTION student_information(integer)
+    RETURNS TABLE(
+		"Student ID" integer,
+		"Forename" text,
+		"Surname" text,
+		"Gender" char,
+		"Date of Birth" date,
+		"Email" text,
+		"Module Taken" text
+	)
+    LANGUAGE 'sql'
+AS $BODY$
+SELECT 
+	std.student_id,
+	std.forename,
+	std.surname,
+	std.gender,
+	std.birth_date,
+	std.email,
+	mdl.module_name || '(' || mdl.year_started || ' - ' || mdl.year_started + 1 || ')' AS "Module Title"
+FROM student std
+	INNER JOIN student_module std_mdl
+		ON std.student_id = std_mdl.student_id
+	INNER JOIN course_module mdl
+		ON std_mdl.module_id = mdl.module_id
+WHERE std.student_id = $1;
+$BODY$
+
+-- FUNCTION TO DISPLAY LECTURER INFORMATION
+CREATE OR REPLACE FUNCTION student_information(integer)
+    RETURNS TABLE(
+		"Student ID" integer,
+		"Forename" text,
+		"Surname" text,
+		"Gender" char,
+		"Date of Birth" date,
+		"Email" text,
+		"Module Taken" text
+	)
+    LANGUAGE 'sql'
+AS $BODY$
+SELECT 
+	lec.lecturer_id,
+	lec.forename,
+	lec.surname,
+	lec.gender,
+	lec.birth_date,
+	lec.email,
+	mdl.module_name || '(' || mdl.year_started || ' - ' || mdl.year_started + 1 || ')' AS "Module Title"
+FROM lecturer lec
+	INNER JOIN lecturer_module lec_mdl
+		ON lec.lecturer_id = lec_mdl.lecturer_id
+	INNER JOIN course_module mdl
+		ON lec_mdl.module_id = mdl.module_id
+WHERE lec.lecturer_id = $1;
+$BODY$
+
+-- FUNCTION TO SELECT EVERY ATTENDANCE RECORD FOR A LECTURE
+CREATE OR REPLACE FUNCTION lecture_attendance(integer)
+    RETURNS TABLE(
+	"Module" text,
+	"Lecture Date" date,
+	"Student Name" text,
+	"Attendance" text
+    )
+    LANGUAGE 'sql'
+AS $BODY$	
+SELECT
+	mdl.module_name || ' (' || mdl.year_started || ' - ' || mdl.year_started + 1 || ')' AS "Module Title",
+	lec.date_taught,
+	std.forename || ' ' || std.surname AS "Student Name",
+	CASE 
+		WHEN att.student_id NOT IN (SELECT student_id FROM attendance WHERE lecture_id = $1) 
+		THEN 'Absent' 
+		ELSE 'Present' 
+	END AS "Attendance"
+FROM lecture lec
+	INNER JOIN course_module AS mdl ON lec.module_id = mdl.module_id
+	INNER JOIN student_module AS std_mdl ON mdl.module_id = std_mdl.module_id
+	INNER JOIN student AS std ON std_mdl.student_id = std.student_id
+	INNER JOIN attendance AS att ON std.student_id = att.student_id
+WHERE lec.lecture_id = $1 
+GROUP BY 
+	"Module Title",
+	date_taught, 
+	"Student Name", 
+	"Attendance"
+$BODY$;
+
+
+-- FUNCTION TO DISPLAY ATTENDANCE RECORDS FOR EVERY LECTURE ASSOCIATED WITH A MODULE
+CREATE OR REPLACE FUNCTION module_attendance(integer)
+    RETURNS TABLE(
+	"Lecture ID" integer,
+	"Module Title" text,
+	"Lecture Date" date,
+	"Student Name" text,
+	"Attendance" text)
+    LANGUAGE 'sql'
+AS $BODY$
+SELECT * FROM (SELECT lecture_id FROM lecture WHERE module_id = $1) l, LATERAL lecture_attendance(l.lecture_id)
+$BODY$;
+
+
+-- TRIGGERS
+
+- TRIGGER TO ENSURE STUDENT IS ENROLED IN THE MODULE WHICH ATTENDANCE IS BEING MONITORED FOR
+CREATE OR REPLACE FUNCTION student_enrolled()
+RETURNS TRIGGER 
+AS $BODY$
+    BEGIN
+        -- Check that empname and salary are given
+        IF NEW.student_id NOT IN(
+			SELECT std.student_id 
+			FROM lecture lec 
+				INNER JOIN course_module mdl
+					ON lec.module_id = mdl.module_id
+				INNER JOIN student_module std_mdl
+					ON mdl.module_id = std_mdl.module_id
+				INNER JOIN student std
+					ON std_mdl.student_id = std.student_id
+			WHERE lec.lecture_id = NEW.lecture_id
+		) THEN
+            RAISE EXCEPTION 'Student not enrolled in module';
+        END IF;
+        RETURN NEW;
+    END;
+$BODY$ 
+LANGUAGE plpgsql;
+
+CREATE TRIGGER attendance_check
+BEFORE INSERT ON attendance 
+    FOR EACH ROW EXECUTE PROCEDURE student_enrolled();
+
+
