@@ -27,8 +27,7 @@ def authenticate_lecturer(email, password):
             return False
 
     if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
-        print('lecturer id: ' + str(lecturer))
-        return True
+        return lecturer
     else:
-        print('INCORRECT PASSWORD')
         return False
+

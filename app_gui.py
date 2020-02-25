@@ -5,10 +5,12 @@ ApplicationGUI is responsible for creation of the GUI for this application, and 
  """
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QPushButton, QStackedLayout, QGridLayout, QLabel, QLineEdit, QSpinBox, QComboBox
+from PyQt5.QtWidgets import QWidget, QPushButton, QStackedLayout, QGridLayout, QLabel, QLineEdit, QSpinBox, QComboBox, \
+    QListWidget
 
 from gui_widgets import CameraFeedWidget
 from authentication import authenticate_lecturer
+from db_interaction import lecturer_module_list, insert_new_lecture, lecture_attendance_list
 
 __author__ = 'Curtis McAllister'
 __maintainer__ = 'Curtis McAllister'
@@ -16,6 +18,13 @@ __email__ = 'mcallister_c20@ulster.ac.uk'
 __status__ = 'Development'
 
 class ApplicationGUI(QWidget):
+
+    # class variables
+    __lecturer_id = None
+    __module_id = None
+    __lecture_id = None
+    __module_list = None
+
     """Class used to define GUI components of the application, and enable navigation between pages of the GUI."""
     def __init__(self, parent=None):
         """ Initialises GUI page layout """
@@ -92,10 +101,9 @@ class ApplicationGUI(QWidget):
         self.label_timer = QLabel(text='Length of Class (Hours):')
         self.label_timer.setStyleSheet('font-size: 16px; color: white')
 
-        # Text Entry Widget
-        # TODO: Replace module QLineEdit with dropdown menu of modules connected to database
-        self.entry_module = QComboBox()
-        self.entry_module.setStyleSheet('color: white; background-color: grey;')
+        # Combobox Widget
+        self.cb_module = QComboBox()
+        self.cb_module.setStyleSheet('color: white; background-color: grey;')
 
         # Spin Box Widget
         self.spin_box_time = QSpinBox()
@@ -117,7 +125,7 @@ class ApplicationGUI(QWidget):
         self.grid_layout_start_page = QGridLayout()
         self.stack_start_page.setLayout(self.grid_layout_start_page)
         self.grid_layout_start_page.addWidget(self.label_module, 1, 1, alignment=QtCore.Qt.AlignRight)
-        self.grid_layout_start_page.addWidget(self.entry_module, 1, 2, alignment=QtCore.Qt.AlignLeft)
+        self.grid_layout_start_page.addWidget(self.cb_module, 1, 2, alignment=QtCore.Qt.AlignLeft)
         self.grid_layout_start_page.addWidget(self.label_timer, 2, 1, alignment=QtCore.Qt.AlignRight)
         self.grid_layout_start_page.addWidget(self.spin_box_time, 2, 2, alignment=QtCore.Qt.AlignLeft)
         self.grid_layout_start_page.addWidget(self.button_logout, 3, 1, alignment=QtCore.Qt.AlignRight)
@@ -140,48 +148,89 @@ class ApplicationGUI(QWidget):
         self.button_navigate_main_menu.clicked.connect(self.navigate_to_start_page)
 
         # Label Widget
-        self.label_module_title = QLabel()
+        self.label_module_title = QLabel('')
         self.label_module_title.setStyleSheet('font-size: 20px; color: white')
 
         # Camera Feed Widget
         self.camera_feed_widget = CameraFeedWidget()
 
         # TODO: List widget of students marked as present
+        self.list_attendance = QListWidget()
+        self.list_attendance.setStyleSheet('font-size: 14px; color: white;')
 
         # Page Layout
         self.camera_feed_page_layout = QGridLayout()
         self.stack_camera_feed_page.setLayout(self.camera_feed_page_layout)
-        self.camera_feed_page_layout.addWidget(self.camera_feed_widget, 0, 0)
+        self.camera_feed_page_layout.addWidget(self.camera_feed_widget, 1, 0)
         self.camera_feed_page_layout.addWidget(self.label_module_title, 0, 1, alignment=QtCore.Qt.AlignTop)
+        self.camera_feed_page_layout.addWidget(self.list_attendance, 1, 1, alignment=QtCore.Qt.AlignTop)
         self.camera_feed_page_layout.addWidget(self.button_navigate_main_menu, 2, 1)
         self.setLayout(self.camera_feed_page_layout)
 
     def login(self):
         """ Log in to the application and navigate to the start page """
+        self.set_lecturer_id(authenticate_lecturer(self.entry_email.text(), self.entry_password.text()))
         if authenticate_lecturer(self.entry_email.text(), self.entry_password.text()):
-            # TODO: set variable for lecturer_id field
+            # clear login page fields
             self.entry_email.setText('')
             self.entry_password.setText('')
             self.label_error_message.setText('')
+            # populate combobox from database
+            self.set_module_list(lecturer_module_list(self.get_lecturer_id()))
+            self.cb_module.addItems(self.get_module_list().values())
+            # set module id
+            for m_id, title in self.get_module_list().items():
+                if title == self.cb_module.currentText():
+                    self.set_module_id(m_id)
+            # navigate to different page
             self.app_pages.setCurrentIndex(1)
         else:
             self.label_error_message.setText('Email and Password do not match')
 
     def logout(self):
-        # TODO: reset lecturer_id
+        self.set_lecture_id(None)
         self.app_pages.setCurrentIndex(0)
+        self.cb_module.clear()
 
     def navigate_to_start_page(self):
         """ Navigates to the Start page. """
+        self.list_attendance.clear()
+        self.set_lecture_id(None)
         self.app_pages.setCurrentIndex(1)
         self.camera_feed_widget.stop_camera_feed()
 
     def navigate_to_camera_feed_page(self):
         """ Navigates to the Camera feed page. """
-        self.app_pages.setCurrentIndex(2)
-        self.label_module_title.setText(self.entry_module.text())
+        self.set_lecture_id(insert_new_lecture(self.get_module_id(), self.get_lecturer_id()))
+        self.label_module_title.setText(self.cb_module.currentText())
         self.camera_feed_widget.start_camera_feed(self.convert_to_hours(int(self.spin_box_time.value())))
+        self.list_attendance.addItems(lecture_attendance_list(self.get_lecture_id()))
+        self.app_pages.setCurrentIndex(2)
 
     def convert_to_hours(self, time):
         converted_time = time * 3600
         return converted_time
+
+    def get_lecturer_id(self):
+        return self.__lecturer_id
+
+    def get_module_id(self):
+        return self.__module_id
+
+    def get_lecture_id(self):
+        return self.__lecture_id
+
+    def get_module_list(self):
+        return self.__module_list
+
+    def set_lecturer_id(self, new_l_id):
+        self.__lecturer_id = new_l_id
+
+    def set_module_id(self, new_m_id):
+        self.__module_id = new_m_id
+
+    def set_lecture_id(self, new_l_id):
+        self.__lecture_id = new_l_id
+
+    def set_module_list(self, new_m_list):
+        self.__module_list = new_m_list
