@@ -4,7 +4,13 @@ import bcrypt
 def authenticate_lecturer(email, password):
     # DB Connection
     try:
-        conn = psycopg2.connect(host="localhost", database="AttendanceManager", user="postgres", password="Peapot1997")
+        conn = psycopg2.connect(
+            host="attendance-manager.cstueihbr6n2.eu-west-1.rds.amazonaws.com",
+            database="AttendanceManager",
+            user="Developer",
+            password="rainforestbuildercode"
+        )
+
         # Create Cursor
         cur = conn.cursor()
     except psycopg2.OperationalError as e:
